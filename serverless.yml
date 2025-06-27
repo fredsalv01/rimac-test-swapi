@@ -13,6 +13,6 @@ plugins:
 
 functions:
   api:
-    handler: /src/handler.handler
+    handler: src/handler.handler
     events:
       - httpApi: "*"
