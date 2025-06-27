@@ -2,8 +2,22 @@
   "name": "rimac-test-swapi",
   "version": "1.0.0",
   "description": "",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "serverless deploy",
+    "offline": "serverless offline",
+    "dev": "ts-node src/handler.ts"
+  },
   "dependencies": {
     "express": "^4.19.2",
     "serverless-http": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.4",
+    "serverless-esbuild": "^1.55.1",
+    "serverless-offline": "^14.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

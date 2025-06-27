@@ -1,16 +1,18 @@
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
 org: albertmorales1398
-# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
 app: swapi-app
-# "service" is the name of this project. This will also be added to your AWS resource names.
 service: rimac-test-swapi
 
 provider:
   name: aws
+  stage: beta
+  region: us-east-1
   runtime: nodejs20.x
+
+plugins:
+  - serverless-offline
 
 functions:
   api:
-    handler: handler.handler
+    handler: /src/handler.handler
     events:
       - httpApi: "*"
