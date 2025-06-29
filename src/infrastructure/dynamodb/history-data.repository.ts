@@ -12,17 +12,21 @@ export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implem
         super(process.env.CHARACTERS_TABLE || 'Characters');
     }
     // funcion para guardar data de datos fusionados
-    async save(data: MergeData): Promise<void> {
-        await this.client.send(
-            new PutCommand({
-                TableName: this.tableName,
-                Item: {
-                    id: uuid(),
-                    mergeData: JSON.stringify(data.toPrimitives()),
-                    createdAt: DateTimeFormat()
-                }
+    async save(data: MergeData[]): Promise<void> {
+        await Promise.all(
+            data.map(item => {
+                return this.client.send(
+                    new PutCommand({
+                        TableName: this.tableName,
+                        Item: {
+                            id: uuid(),
+                            mergeData: JSON.stringify(item.toPrimitives()),
+                            createdAt: DateTimeFormat()
+                        }
+                    })
+                );
             })
-        )
+        );
     }
 
     // mostrar el historico de respuestas guardados.
@@ -42,8 +46,7 @@ export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implem
         const response = await this.client.send(new ScanCommand(params));
 
         const items = (response.Items || []).map((item: any) => {
-            const parsed = JSON.parse(item?.mergeData);
-            return HistoryData.fromPrimitives(parsed);
+            return HistoryData.fromPrimitives(item);
         });
 
         return {
