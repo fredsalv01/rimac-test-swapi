@@ -6,7 +6,7 @@ import { DynamoDBBaseRepository } from "./base/dynamodb.repository";
 import { getPeruDateTimeISO } from "../../shared/functions/DateTimeFormat";
 import { HistoryData } from "../../domain/entities/history-data.entity";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
-
+import {v4 as uuidv4} from 'uuid';
 export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implements HistoryDataRepository {
     constructor() {
         super(process.env.HISTORY_TABLE || 'HistoryTable');
@@ -19,6 +19,7 @@ export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implem
                     TableName: this.tableName,
                     Item: {
                         id: "HISTORY_PARTITION_KEY",
+                        uuid: uuidv4(),
                         mergeData: JSON.stringify(data.map(item => item.toPrimitives())),
                         createdAt: getPeruDateTimeISO()
                     }
@@ -64,6 +65,7 @@ export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implem
                 const plainItem = unmarshall(item);
                 return HistoryData.fromPrimitives({
                     id: String(plainItem.id),
+                    uuid: String(plainItem.uuid),
                     mergeData: String(plainItem.mergeData),
                     createdAt: String(plainItem.createdAt)
                 });

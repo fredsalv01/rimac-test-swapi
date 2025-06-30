@@ -17,11 +17,13 @@ provider:
       Resource:
         - arn:aws:dynamodb:${self:provider.region}:*:table/HistoryTable
         - arn:aws:dynamodb:${self:provider.region}:*:table/CacheTable
+        - arn:aws:dynamodb:${self:provider.region}:*:table/CustomDataTable
 
 custom:
   environment:
     HISTORY_TABLE: HistoryTable
     CACHE_TABLE: CacheTable
+    CUSTOM_DATA_TABLE: CustomDataTable
 
 plugins:
   - serverless-offline
@@ -61,5 +63,16 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: cacheKey
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+    CustomDataTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CustomDataTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
