@@ -6,7 +6,7 @@ import { CharacterRepositoryPort } from "../domain/repositories/character-port.r
 export class GetAllCharactersUseCase {
     constructor(private characterRepo: CharacterRepositoryPort) {}
 
-    async execute(): Promise<Character[]> {
+    async execute(): Promise<{ data: Character[]; total: number; }> {
         return this.characterRepo.getAll();
     }
 }

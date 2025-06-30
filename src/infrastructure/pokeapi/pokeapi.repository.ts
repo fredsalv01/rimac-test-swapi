@@ -16,7 +16,6 @@ export class PokeApiRepository implements PokemonApiPort {
                 throw new Error("No Pokémon data received from PokeAPI");
             }
             return responses.map((r) => {
-                console.log("🚀 ~ PokeApiRepository ~ getRandomTeam ~ r:", r.data.name);
                 return `${r.data.name.charAt(0).toUpperCase() + r.data.name.slice(1)}`
             });
         } catch (error) {

@@ -1,6 +1,10 @@
-export function DateTimeFormat(): string {
-    const fecha = new Date();
-    const opciones: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    const fechaFormateada = new Intl.DateTimeFormat('es-PE', opciones).format(fecha);
-    return fechaFormateada;
+
+import { DateTime } from 'luxon';
+
+export function getPeruDateTimeISO(): string {
+    return DateTime.now().setZone('America/Lima').toISO() ?? '';
+}
+
+export function formatPeruDate(): string {
+    return DateTime.now().setZone('America/Lima').toFormat('dd/MM/yyyy HH:mm:ss') ?? '';
 }

@@ -2,31 +2,32 @@ import { PutCommand, ScanCommandInput } from "@aws-sdk/lib-dynamodb";
 import { MergeData } from "../../domain/entities/merge-data.entity";
 import { HistoryDataRepository } from "../../domain/repositories/history-data.repository";
 import { DynamoDBBaseRepository } from "./base/dynamodb.repository";
-import { DateTimeFormat } from "../../shared/functions/DateTimeFormat";
+import { getPeruDateTimeISO } from "../../shared/functions/DateTimeFormat";
 import {v4 as uuid } from 'uuid'
 import { ScanCommand } from "@aws-sdk/client-dynamodb";
 import { HistoryData } from "../../domain/entities/history-data.entity";
 
 export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implements HistoryDataRepository {
     constructor() {
-        super(process.env.CHARACTERS_TABLE || 'Characters');
+        super(process.env.HISTORY_TABLE || 'HistoryTable');
     }
     // funcion para guardar data de datos fusionados
     async save(data: MergeData[]): Promise<void> {
-        await Promise.all(
-            data.map(item => {
-                return this.client.send(
-                    new PutCommand({
-                        TableName: this.tableName,
-                        Item: {
-                            id: uuid(),
-                            mergeData: JSON.stringify(item.toPrimitives()),
-                            createdAt: DateTimeFormat()
-                        }
-                    })
-                );
-            })
-        );
+        try {
+            await this.client.send(
+                new PutCommand({
+                    TableName: this.tableName,
+                    Item: {
+                        id: uuid(),
+                        mergeData: JSON.stringify(data.map(item => item.toPrimitives())),
+                        createdAt: getPeruDateTimeISO()
+                    }
+                })
+            );
+        } catch (error) {
+            console.error("Error saving merge data:", error);
+            throw new Error("Failed to save merge data");
+        }
     }
 
     // mostrar el historico de respuestas guardados.
