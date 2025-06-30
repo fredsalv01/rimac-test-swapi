@@ -19,7 +19,7 @@ app.get("/fusionados", (req: Request, res: Response) => {
     // Buscar en caché
     const cached = await cacheRepo.getCache(cacheKey);
     if (cached) {
-      console.log("Returning data from cache");
+      console.log("Returning data from cache ⚡");
       return res.status(200).json({
         page: parseInt(page as string),
         limit: parseInt(limit as string),
@@ -27,7 +27,7 @@ app.get("/fusionados", (req: Request, res: Response) => {
         data: cached.data
       });
     }
-
+    console.log("Cache miss 😓, fetching from Swapi and PokeApi");
     const swapiRepo = new SwapiCharacterRepository();
     const pokeApi = new PokeApiRepository();
     const mergeDataUseCase = new GetMergeDataUseCase(swapiRepo, pokeApi);

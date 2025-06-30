@@ -29,6 +29,8 @@ plugins:
 functions:
   api:
     handler: src/handler.handler
+    timeout: 10
+    memorySize: 256
     events:
       - httpApi: "*"
 
