@@ -1,11 +1,11 @@
-import { PutCommand, ScanCommandInput } from "@aws-sdk/lib-dynamodb";
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand, QueryCommandInput } from "@aws-sdk/client-dynamodb";
 import { MergeData } from "../../domain/entities/merge-data.entity";
 import { HistoryDataRepository } from "../../domain/repositories/history-data.repository";
 import { DynamoDBBaseRepository } from "./base/dynamodb.repository";
 import { getPeruDateTimeISO } from "../../shared/functions/DateTimeFormat";
-import {v4 as uuid } from 'uuid'
-import { ScanCommand } from "@aws-sdk/client-dynamodb";
 import { HistoryData } from "../../domain/entities/history-data.entity";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 
 export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implements HistoryDataRepository {
     constructor() {
@@ -18,7 +18,7 @@ export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implem
                 new PutCommand({
                     TableName: this.tableName,
                     Item: {
-                        id: uuid(),
+                        id: "HISTORY_PARTITION_KEY",
                         mergeData: JSON.stringify(data.map(item => item.toPrimitives())),
                         createdAt: getPeruDateTimeISO()
                     }
@@ -31,28 +31,54 @@ export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implem
     }
 
     // mostrar el historico de respuestas guardados.
-    async history(filters: any[], limit: number, startKey?: Record<string, any>): Promise<{
+    async history(limit: number = 10, startKey?: Record<string, any>): Promise<{
         items: HistoryData[];
         lastKey?: Record<string, any>;
     }> {
-        const params: ScanCommandInput = {
-            TableName: this.tableName,
-            Limit: limit
-        };
-
-        if(startKey) {
-            params.ExclusiveStartKey = startKey;
+        console.log("limit:", limit, "startKey:", startKey);
+        if (limit <= 0 || limit > 100) {
+            throw new Error("Limit must be between 1 and 100");
         }
+        
+        try {
+            const params: QueryCommandInput = {
+                TableName: this.tableName,
+                KeyConditionExpression: "#id = :idValue",
+                ExpressionAttributeNames: {
+                "#id": "id"
+                },
+                ExpressionAttributeValues: {
+                ":idValue": { S: "HISTORY_PARTITION_KEY" } // clave fija si solo hay un historial global
+                },
+                Limit: limit,
+                ScanIndexForward: true, // true = ascendente, false = descendente
+            };
 
-        const response = await this.client.send(new ScanCommand(params));
+            if(startKey) {
+                params.ExclusiveStartKey = startKey;
+            }
 
-        const items = (response.Items || []).map((item: any) => {
-            return HistoryData.fromPrimitives(item);
-        });
+            const response = await this.client.send(new QueryCommand(params));
+            let items = (response.Items || []).map((item: any) => {
+                // Deserializa cada ítem de DynamoDB
+                const plainItem = unmarshall(item);
+                return HistoryData.fromPrimitives({
+                    id: String(plainItem.id),
+                    mergeData: String(plainItem.mergeData),
+                    createdAt: String(plainItem.createdAt)
+                });
+            });
 
-        return {
-            items,
-            lastKey: response.LastEvaluatedKey
-        };
+            const lastKey = response.LastEvaluatedKey
+            ? response.LastEvaluatedKey
+            : undefined;
+            return {
+                items,  
+                lastKey: lastKey
+            };
+        } catch (error) {
+            console.error("Error fetching history data:", error);
+            throw new Error("Failed to fetch history data");
+        }
     }
 }

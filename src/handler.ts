@@ -54,7 +54,28 @@ app.post("/almacenar", (req: Request, res: Response) => {
 
 app.get('/historial', async (req: Request, res: Response) => {
   console.log("GET /historial called");
-  const { page = "1", limit = "10" } = req.query;
+  const { limit = "10" } = req.query;
+  const lastKeyId = req.query["lastKey"];
+
+  let startKey: Record<string, any> | undefined = undefined;
+  if (lastKeyId) {
+    startKey = { id: { S: String(lastKeyId) } };
+  }
+  console.log("limit:", limit, "startKey:", startKey);
+  const historyDataRepository = new DynamoDBHistoryDataRepository();
+
+  try {
+    const historyData = await historyDataRepository.history(parseInt(limit as string), startKey);
+    res.status(200).json({
+      limit: parseInt(limit as string),
+      totalItems: historyData.items.length,
+      data: historyData.items,
+      nextPage: historyData.lastKey || null
+    });
+  } catch (error) {
+    console.error("Error fetching history data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 })
 
 app.use((req: Request, res: Response) => {
