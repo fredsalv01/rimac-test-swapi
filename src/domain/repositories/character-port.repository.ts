@@ -1,5 +1,8 @@
 import { Character } from '../entities/characters.entity';
 
 export interface CharacterRepositoryPort {
-  getAll(): Promise<Character[]>;
+  getAll(page?: number, limit?: number): Promise<{
+    data: Character[];
+    total: number;
+  }>;
 }

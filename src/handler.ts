@@ -8,12 +8,12 @@ const app = express();
 
 app.get("/", async (req: Request, res: Response) => {
   console.log("GET / called");
+  const { page = "1", limit = "10" } = req.query;
   const swapiRepo = new SwapiCharacterRepository();
   const pokeApi = new PokeApiRepository();
   const useCase = new GetMergeDataUseCase(swapiRepo, pokeApi);
   try {
-    const mergeData = await useCase.execute();
-    
+    const mergeData = await useCase.execute(parseInt(page as string), parseInt(limit as string));
     res.status(200).json(mergeData);
   } catch (error) {
     console.error("Error fetching mergeData from Swapi and PokeApi:", error);

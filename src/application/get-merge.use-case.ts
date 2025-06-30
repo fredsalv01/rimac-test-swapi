@@ -1,6 +1,7 @@
 import { MergeData } from "../domain/entities/merge-data.entity";
 import { CharacterRepositoryPort } from '../domain/repositories/character-port.repository';
 import { PokemonApiPort } from '../domain/repositories/pokemon-team-port.repository';
+import pLimit from 'p-limit';
 
 export class GetMergeDataUseCase {
     constructor(
@@ -8,20 +9,38 @@ export class GetMergeDataUseCase {
         private readonly pokemonApi: PokemonApiPort
     ){}
 
-    async execute(): Promise<MergeData[]>{
-        const characters = await this.characterRepo.getAll();
-        return await Promise.all(
-            characters.map(async (character) => {
-                const pokemonTeam = await this.pokemonApi.getRandomTeam(1);
-                const mergeData = new MergeData(
-                    character.name,
-                    character.gender,
-                    character.height,
-                    character.birthYear,
-                    pokemonTeam,
-                );
-                return mergeData;
-            })
-        )
+    async execute(page = 1, limit = 10): Promise<{
+        page: number;
+        limit: number;
+        totalItems: number;
+        data: MergeData[];
+    }> {
+        const { data: characters, total } = await this.characterRepo.getAll(page, limit);
+        const limitConcurrency = pLimit(5);
+
+        const enriched = await Promise.all(
+            characters.map((char) =>
+                limitConcurrency(async () => {
+                    const [team] = await Promise.all([
+                        this.pokemonApi.getRandomTeam(6),
+                    ]);
+                    const pokemonTeam = team.map((pokemon) => pokemon);
+                    const mergeData = new MergeData(
+                        char.name,
+                        char.gender,
+                        char.height,
+                        char.birthYear,
+                        pokemonTeam,
+                    );
+                    return mergeData;
+                })
+            )
+        );
+        return {
+            page,
+            limit,
+            totalItems: total,
+            data: enriched
+        }
     }
 }
