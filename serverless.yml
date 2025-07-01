@@ -2,6 +2,10 @@ org: albertmorales1398
 app: swapi-app
 service: rimac-test-swapi
 
+package:
+  include:
+    - src/build/swagger.json
+
 provider:
   name: aws
   stage: beta

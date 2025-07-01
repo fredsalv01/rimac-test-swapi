@@ -3,7 +3,6 @@ import { SwapiCharacterRepository } from "./infrastructure/swapi/swapi-character
 import { GetMergeDataUseCase } from "./application/get-merge.use-case";
 import { PokeApiRepository } from './infrastructure/pokeapi/pokeapi.repository';
 import { SaveHistoryDataUseCase } from "./application/save-history-data.use-case";
-import { DynamoDBHistoryDataRepository } from "./infrastructure/dynamodb/history-data.repository";
 import { DynamoDBCacheRepository } from "./infrastructure/cache/dynamo-cache.repository";
 import { DynamoDBCustomDataRepository } from "./infrastructure/dynamodb/custom-data.repository";
 import { asyncHandler } from "./shared/functions/AsyncHandler";
