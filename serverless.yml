@@ -56,28 +56,28 @@ functions:
 
 resources:
   Resources:
-    MyRDSSecurityGroup:
-      Type: AWS::EC2::SecurityGroup
-      Properties:
-        GroupDescription: Access to RDS
-        VpcId: vpc-0abfbaae74cb19f15       # si usas VPC
-        SecurityGroupIngress:
-          - IpProtocol: tcp
-            FromPort: 3306
-            ToPort: 3306
-            CidrIp: ${self:custom.allowedIpRange}
-    MyRDS:
-      Type: AWS::RDS::DBInstance
-      Properties:
-        DBInstanceIdentifier: swapi-mysql
-        AllocatedStorage: '20'
-        DBInstanceClass: db.t4g.micro
-        Engine: mysql
-        MasterUsername: admin
-        MasterUserPassword: Josdav&fred37
-        DBName: swapi_db
-        PubliclyAccessible: true
-        BackupRetentionPeriod: 0
+    # MyRDSSecurityGroup:
+    #   Type: AWS::EC2::SecurityGroup
+    #   Properties:
+    #     GroupDescription: Access to RDS
+    #     VpcId: vpc-0abfbaae74cb19f15       # si usas VPC
+    #     SecurityGroupIngress:
+    #       - IpProtocol: tcp
+    #         FromPort: 3306
+    #         ToPort: 3306
+    #         CidrIp: ${self:custom.allowedIpRange}
+    # MyRDS:
+    #   Type: AWS::RDS::DBInstance
+    #   Properties:
+    #     DBInstanceIdentifier: swapi-mysql
+    #     AllocatedStorage: '20'
+    #     DBInstanceClass: db.t4g.micro
+    #     Engine: mysql
+    #     MasterUsername: admin
+    #     MasterUserPassword: Josdav&fred37
+    #     DBName: swapi_db
+    #     PubliclyAccessible: true
+    #     BackupRetentionPeriod: 0
     HistoryTable:
       Type: AWS::DynamoDB::Table
       Properties:
