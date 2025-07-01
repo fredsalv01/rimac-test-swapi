@@ -6,7 +6,7 @@ export class SwapiCharacterRepository implements CharacterRepositoryPort {
     async getAll(page = 1, limit = 10): Promise<{data: Character[], total: number}> {
         const response = await axios.get<Character[]>("https://swapi.info/api/people");
         if (!response) {
-            throw new Error("Invalid data format received from SWAPI");
+            throw new Error("No se pudo obtener la data de los personajes desde SWAPI");
         }
         const start = (page - 1) * limit;
         const end = start + limit;

@@ -26,8 +26,8 @@ export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implem
                 })
             );
         } catch (error) {
-            console.error("Error saving merge data:", error);
-            throw new Error("Failed to save merge data");
+            console.error("Error guardando data fusionada:", error);
+            throw new Error("Fallo al guardar la data fusionada");
         }
     }
 
@@ -38,7 +38,7 @@ export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implem
     }> {
         console.log("limit:", limit, "startKey:", startKey);
         if (limit <= 0 || limit > 100) {
-            throw new Error("Limit must be between 1 and 100");
+            throw new Error("El límite debe ser un número entre 1 y 100");
         }
         
         try {
@@ -79,8 +79,8 @@ export class DynamoDBHistoryDataRepository extends DynamoDBBaseRepository implem
                 lastKey: lastKey
             };
         } catch (error) {
-            console.error("Error fetching history data:", error);
-            throw new Error("Failed to fetch history data");
+            console.error("Error mostrando data del historial:", error);
+            throw new Error("Fallo al mostrar la data del historial");
         }
     }
 }

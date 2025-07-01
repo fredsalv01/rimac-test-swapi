@@ -19,8 +19,8 @@ export class PokeApiRepository implements PokemonApiPort {
                 return `${r.data.name.charAt(0).toUpperCase() + r.data.name.slice(1)}`
             });
         } catch (error) {
-            console.error("Error fetching Pokémon team:", error);
-            throw new Error("Failed to fetch Pokémon team");
+            console.error("Error al obtener el equipo de Pokémon de pokeApi:", error);
+            throw new Error("Fallo al obtener el equipo de Pokémon de pokeApi");
         }
     }
 }

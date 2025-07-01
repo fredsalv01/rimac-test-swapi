@@ -8,3 +8,7 @@ export function getPeruDateTimeISO(): string {
 export function formatPeruDate(): string {
     return DateTime.now().setZone('America/Lima').toFormat('dd/MM/yyyy HH:mm:ss') ?? '';
 }
+
+export function formatPeruDateTime(date: string): string {
+    return DateTime.fromISO(date, { zone: 'America/Lima' }).toFormat('dd/MM/yyyy HH:mm:ss') ?? '';
+}

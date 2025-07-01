@@ -7,6 +7,7 @@ import { DynamoDBHistoryDataRepository } from "./infrastructure/dynamodb/history
 import { DynamoDBCacheRepository } from "./infrastructure/cache/dynamo-cache.repository";
 import { DynamoDBCustomDataRepository } from "./infrastructure/dynamodb/custom-data.repository";
 import { asyncHandler } from "./shared/functions/AsyncHandler";
+import { formatPeruDateTime } from "./shared/functions/DateTimeFormat";
 
 
 export function registerRoutes(app: Express) {
@@ -56,15 +57,21 @@ export function registerRoutes(app: Express) {
         try {
             const payload = req.body;
 
-            if (!payload || typeof payload !== "object") {
-                res.status(400).json({ error: "Invalid body content" });
+            if (!payload || typeof payload !== "object" || Object.keys(payload).length === 0) {
+                return res.status(400).json({ error: "El contenido a almacenar es invalido." });
             }
 
-            await customDataRepository.save(payload);
+            // cambiando el dateTime para que sea en un formato legible para el usuario
+            const {createdAt, ...otherFields} = await customDataRepository.save(payload);
+            const customDate = formatPeruDateTime(createdAt);
+            const result = {
+                ...otherFields.data,
+                createdAt: customDate
+            }
 
-            return res.status(201).json({ message: "Data stored successfully" });
+            return res.status(201).json({ message: "Datos guardados exitosamente", data: result });
         } catch (error) {
-            console.error("Error saving custom data:", error);
+            console.error("Error guardando data personalizada:", error);
             return res.status(500).json({ error: "Internal Server Error" });
         }
     }));
@@ -84,13 +91,13 @@ export function registerRoutes(app: Express) {
         try {
             const historyData = await historyDataRepository.history(parseInt(limit as string), startKey);
             return res.status(200).json({
-            limit: parseInt(limit as string),
-            totalItems: historyData.items.length,
-            data: historyData.items,
-            nextPage: historyData.lastKey || null
+                limit: parseInt(limit as string),
+                totalItems: historyData.items.length,
+                data: historyData.items,
+                nextPage: historyData.lastKey || null
             });
         } catch (error) {
-            console.error("Error fetching history data:", error);
+            console.error("Error mostrando la data del historial:", error);
             return res.status(500).json({ error: "Internal Server Error" });
         }
     }));
