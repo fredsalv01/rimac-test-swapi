@@ -1,0 +1,164 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "rimac-test-swapi API",
+    "version": "1.0.0",
+    "description": "API for Star Wars and Pokémon data fusion"
+  },
+  "paths": {
+    "/fusionados": {
+      "get": {
+        "summary": "Obtener personajes fusionados",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de personajes fusionados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": { "type": "integer" },
+                    "limit": { "type": "integer" },
+                    "totalItems": { "type": "integer" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/MergeData" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/almacenar": {
+      "post": {
+        "summary": "Almacenar datos personalizados",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Datos guardados exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/historial": {
+      "get": {
+        "summary": "Obtener historial de fusiones",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historial de fusiones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "limit": { "type": "integer" },
+                    "totalItems": { "type": "integer" },
+                    "page": { "type": "integer" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/HistoryData" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MergeData": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "height": { "type": "string" },
+          "gender": { "type": "string" },
+          "birth_year": { "type": "string" },
+          "pokemon_team": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "Character": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "height": { "type": "string" },
+          "birthYear": { "type": "string" },
+          "gender": { "type": "string" }
+        }
+      },
+      "PokemonTeam": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "HistoryData": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "mergeData": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

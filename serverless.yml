@@ -8,11 +8,11 @@ provider:
   region: us-east-1
   runtime: nodejs20.x
   environment:
-    DB_HOST: ${ssm:/swapi-mysql/${self:provider.stage}/db_host} # swapi-mysql.cs9c4440uvq6.us-east-1.rds.amazonaws.com
-    DB_PORT: ${ssm:/swapi-mysql/${self:provider.stage}/db_port} # 3306
-    DB_USER: ${ssm:/swapi-mysql/${self:provider.stage}/db_user} # admin
-    DB_PASSWORD: ${ssm:/swapi-mysql/${self:provider.stage}/db_password} # Josdav&fred37
-    DB_NAME: ${ssm:/swapi-mysql/${self:provider.stage}/db_name} # swapi_db
+    DB_HOST: ${ssm:/swapi-mysql/${self:provider.stage}/db_host} 
+    DB_PORT: ${ssm:/swapi-mysql/${self:provider.stage}/db_port} 
+    DB_USER: ${ssm:/swapi-mysql/${self:provider.stage}/db_user} 
+    DB_PASSWORD: ${ssm:/swapi-mysql/${self:provider.stage}/db_password} 
+    DB_NAME: ${ssm:/swapi-mysql/${self:provider.stage}/db_name}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -41,6 +41,11 @@ custom:
     DB_PASSWORD: ${self:provider.environment.DB_PASSWORD}
     DB_NAME: ${self:provider.environment.DB_NAME}
   allowedIpRange: 203.0.113.5/32
+  documentation:
+    version: '1'
+    title: 'rimac-test-swapi API'
+    description: 'Test API para Rimac con integración a SWAPI y PokeAPI'
+    models: {}
 
 plugins:
   - serverless-offline
@@ -60,7 +65,7 @@ resources:
     #   Type: AWS::EC2::SecurityGroup
     #   Properties:
     #     GroupDescription: Access to RDS
-    #     VpcId: vpc-0abfbaae74cb19f15       # si usas VPC
+    #     VpcId: vpc-xxxxxxxx      
     #     SecurityGroupIngress:
     #       - IpProtocol: tcp
     #         FromPort: 3306
@@ -74,7 +79,7 @@ resources:
     #     DBInstanceClass: db.t4g.micro
     #     Engine: mysql
     #     MasterUsername: admin
-    #     MasterUserPassword: Josdav&fred37
+    #     MasterUserPassword: xxxx
     #     DBName: swapi_db
     #     PubliclyAccessible: true
     #     BackupRetentionPeriod: 0

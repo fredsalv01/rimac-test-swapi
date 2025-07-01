@@ -23,8 +23,12 @@
     "p-limit": "^6.2.0",
     "reflect-metadata": "^0.2.2",
     "serverless-http": "^3.2.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-dist": "^5.25.4",
+    "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.25",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.27.7",
@@ -34,6 +38,8 @@
     "@types/luxon": "^3.6.2",
     "@types/node": "^24.0.8",
     "@types/supertest": "^6.0.3",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "babel-jest": "^30.0.2",
     "jest": "^30.0.3",
     "serverless-esbuild": "^1.55.1",
