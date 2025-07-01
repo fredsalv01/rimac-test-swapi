@@ -7,6 +7,12 @@ provider:
   stage: beta
   region: us-east-1
   runtime: nodejs20.x
+  environment:
+    DB_HOST: ${ssm:/swapi-mysql/${self:provider.stage}/db_host} # swapi-mysql.cs9c4440uvq6.us-east-1.rds.amazonaws.com
+    DB_PORT: ${ssm:/swapi-mysql/${self:provider.stage}/db_port} # 3306
+    DB_USER: ${ssm:/swapi-mysql/${self:provider.stage}/db_user} # admin
+    DB_PASSWORD: ${ssm:/swapi-mysql/${self:provider.stage}/db_password~true}  # Josdav&fred37
+    DB_NAME: ${ssm:/swapi-mysql/${self:provider.stage}/db_name} # swapi_db
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -18,12 +24,23 @@ provider:
         - arn:aws:dynamodb:${self:provider.region}:*:table/HistoryTable
         - arn:aws:dynamodb:${self:provider.region}:*:table/CacheTable
         - arn:aws:dynamodb:${self:provider.region}:*:table/CustomDataTable
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+      Resource:
+        - arn:aws:ssm:${self:provider.region}:*:parameter/swapi-mysql/${self:provider.stage}/*
 
 custom:
   environment:
     HISTORY_TABLE: HistoryTable
     CACHE_TABLE: CacheTable
     CUSTOM_DATA_TABLE: CustomDataTable
+    DB_HOST: ${self:provider.environment.DB_HOST}
+    DB_PORT: ${self:provider.environment.DB_PORT}
+    DB_USER: ${self:provider.environment.DB_USER}
+    DB_PASSWORD: ${self:provider.environment.DB_PASSWORD}
+    DB_NAME: ${self:provider.environment.DB_NAME}
+  allowedIpRange: 203.0.113.5/32
 
 plugins:
   - serverless-offline
@@ -39,6 +56,28 @@ functions:
 
 resources:
   Resources:
+    MyRDSSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Access to RDS
+        VpcId: vpc-0abfbaae74cb19f15       # si usas VPC
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 3306
+            ToPort: 3306
+            CidrIp: ${self:custom.allowedIpRange}
+    MyRDS:
+      Type: AWS::RDS::DBInstance
+      Properties:
+        DBInstanceIdentifier: swapi-mysql
+        AllocatedStorage: '20'
+        DBInstanceClass: db.t4g.micro
+        Engine: mysql
+        MasterUsername: admin
+        MasterUserPassword: Josdav&fred37
+        DBName: swapi_db
+        PubliclyAccessible: true
+        BackupRetentionPeriod: 0
     HistoryTable:
       Type: AWS::DynamoDB::Table
       Properties:

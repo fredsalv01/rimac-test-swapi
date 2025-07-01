@@ -8,6 +8,7 @@ import { DynamoDBCacheRepository } from "./infrastructure/cache/dynamo-cache.rep
 import { DynamoDBCustomDataRepository } from "./infrastructure/dynamodb/custom-data.repository";
 import { asyncHandler } from "./shared/functions/AsyncHandler";
 import { formatPeruDateTime } from "./shared/functions/DateTimeFormat";
+import { MySQLHistoryDataRepository } from "./infrastructure/RDS/history-data-mysql.repository";
 
 
 export function registerRoutes(app: Express) {
@@ -41,7 +42,7 @@ export function registerRoutes(app: Express) {
         await cacheRepo.setCache(cacheKey, mergeData);
 
         // Guardar en histórico
-        const historyDataRepository = new DynamoDBHistoryDataRepository()
+        const historyDataRepository = new MySQLHistoryDataRepository();
         const saveHistoryData = new SaveHistoryDataUseCase(historyDataRepository);
         await saveHistoryData.save(mergeData.data);
 
@@ -78,23 +79,21 @@ export function registerRoutes(app: Express) {
 
     app.get('/historial', asyncHandler( async (req: Request, res: Response) => {
         console.log("GET /historial called");
-        const { limit = "10" } = req.query;
-        const lastKeyId = req.query["lastKey"];
+        const { limit = "10", page = "1" } = req.query;
 
-        let startKey: Record<string, any> | undefined = undefined;
-        if (lastKeyId) {
-            startKey = { id: { S: String(lastKeyId) } };
-        }
-        console.log("limit:", limit, "startKey:", startKey);
-        const historyDataRepository = new DynamoDBHistoryDataRepository();
+        const historyDataRepository = new MySQLHistoryDataRepository();
 
         try {
-            const historyData = await historyDataRepository.history(parseInt(limit as string), startKey);
+            const historyData = await historyDataRepository.history(parseInt(page as string), parseInt(limit as string));
             return res.status(200).json({
                 limit: parseInt(limit as string),
-                totalItems: historyData.items.length,
-                data: historyData.items,
-                nextPage: historyData.lastKey || null
+                totalItems: historyData.total,
+                page: parseInt(page as string),
+                data: historyData.items.map(item => ({
+                    id: item.id,
+                    mergeData: JSON.parse(item.mergeData),
+                    createdAt: formatPeruDateTime(item.createdAt.toISOString())
+                }))
             });
         } catch (error) {
             console.error("Error mostrando la data del historial:", error);
