@@ -6,7 +6,9 @@
     "build": "tsc",
     "deploy": "serverless deploy",
     "offline": "serverless offline",
-    "dev": "ts-node src/handler.ts"
+    "dev": "ts-node src/handler.ts",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.835.0",
@@ -25,11 +27,19 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.27.7",
+    "@babel/preset-env": "^7.27.2",
     "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
     "@types/luxon": "^3.6.2",
     "@types/node": "^24.0.8",
+    "@types/supertest": "^6.0.3",
+    "babel-jest": "^30.0.2",
+    "jest": "^30.0.3",
     "serverless-esbuild": "^1.55.1",
     "serverless-offline": "^14.4.0",
+    "supertest": "^7.1.1",
+    "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
