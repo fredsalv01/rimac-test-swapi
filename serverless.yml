@@ -11,7 +11,7 @@ provider:
     DB_HOST: ${ssm:/swapi-mysql/${self:provider.stage}/db_host} # swapi-mysql.cs9c4440uvq6.us-east-1.rds.amazonaws.com
     DB_PORT: ${ssm:/swapi-mysql/${self:provider.stage}/db_port} # 3306
     DB_USER: ${ssm:/swapi-mysql/${self:provider.stage}/db_user} # admin
-    DB_PASSWORD: ${ssm:/swapi-mysql/${self:provider.stage}/db_password~true}  # Josdav&fred37
+    DB_PASSWORD: ${ssm:/swapi-mysql/${self:provider.stage}/db_password} # Josdav&fred37
     DB_NAME: ${ssm:/swapi-mysql/${self:provider.stage}/db_name} # swapi_db
   iamRoleStatements:
     - Effect: Allow
