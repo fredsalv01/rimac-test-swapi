@@ -1,4 +1,3 @@
-// test/routes.test.ts
 import express from 'express';
 import request from 'supertest';
 import { registerRoutes } from '../src/routes';
@@ -28,13 +27,13 @@ describe('Routes integration', () => {
   describe('GET /fusionados', () => {
     it('devuelve datos fusionados y los guarda correctamente', async () => {
       (SwapiCharacterRepository as jest.Mock).mockImplementation(() => ({
-        getCharacters: jest.fn().mockResolvedValue({
+        getAll: jest.fn().mockResolvedValue({
           total: 1,
-          data: [{ name: 'Luke', height: '172', gender: 'male', birth_year: '19BBY' }]
+          data: [{ name: 'Luke', height: '172', gender: 'male', birthYear: '19BBY' }]
         })
       }));
       (PokeApiRepository as jest.Mock).mockImplementation(() => ({
-        getPokemonTeam: jest.fn().mockResolvedValue(['Pikachu', 'Charmander'])
+        getRandomTeam: jest.fn().mockResolvedValue(['Pikachu', 'Charmander'])
       }));
       const getCacheMock = jest.fn().mockResolvedValue(null);
       const setCacheMock = jest.fn().mockResolvedValue(undefined);
