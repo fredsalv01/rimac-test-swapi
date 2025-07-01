@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "rm -rf build && mkdir -p build && tsc && cp src/build/swagger.json build/",
+    "build": "tsc",
     "deploy": "serverless deploy",
     "offline": "serverless offline",
     "dev": "ts-node src/handler.ts",
