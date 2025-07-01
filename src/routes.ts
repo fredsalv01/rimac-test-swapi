@@ -85,13 +85,14 @@ export function registerRoutes(app: Express) {
 
         try {
             const historyData = await historyDataRepository.history(parseInt(page as string), parseInt(limit as string));
+            console.log("Historial data retrieved successfully", historyData);
             return res.status(200).json({
                 limit: parseInt(limit as string),
                 totalItems: historyData.total,
                 page: parseInt(page as string),
                 data: historyData.items.map(item => ({
                     id: item.id,
-                    mergeData: JSON.parse(item.mergeData),
+                    mergeData: item.mergeData,
                     createdAt: formatPeruDateTime(item.createdAt.toISOString())
                 }))
             });

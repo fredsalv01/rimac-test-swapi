@@ -4,7 +4,7 @@ import { AppDataSource } from "../typeorm/typeorm.config";
 import { HistoryDataRepository } from "../../domain/repositories/history-data.repository";
 import { MergeData } from "../../domain/entities/merge-data.entity";
 import { getPeruDateTimeISO } from "../../shared/functions/DateTimeFormat";
-
+import { v4 as uuid } from "uuid";
 export class MySQLHistoryDataRepository implements HistoryDataRepository {
     private repository: Repository<HistoryData>;
 
@@ -14,6 +14,7 @@ export class MySQLHistoryDataRepository implements HistoryDataRepository {
 
     async save(data: Partial<MergeData[]>): Promise<void> {
         const historyData = this.repository.create({
+            id: uuid(),
             mergeData: JSON.stringify(data),
             createdAt: getPeruDateTimeISO()
         });
